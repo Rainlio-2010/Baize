@@ -1,11 +1,5 @@
 import React, { useRef, useEffect } from "react";
-import {
-  Send,
-  Settings as SettingsIcon,
-  Loader2,
-  Play,
-  CheckCircle,
-} from "lucide-react";
+import { Send, Settings as SettingsIcon, Loader2 } from "lucide-react";
 import { useBaizeChat } from "../hooks/use-baize-chat";
 
 interface ChatProps {
@@ -36,65 +30,70 @@ export const Chat: React.FC<ChatProps> = ({ onOpenSettings }) => {
       return <div>{msg.content}</div>;
     }
     if (Array.isArray(msg.content)) {
+      const toolCallParts = msg.content.filter(
+        (part: any) => part.type === "tool-call",
+      );
+      const otherParts = msg.content.filter(
+        (part: any) => part.type !== "tool-call",
+      );
       return (
         <div>
-          {msg.content.map((part: any, idx: number) => {
-            if (part.type === "text") {
-              return <div key={idx}>{part.text}</div>;
-            }
-            if (part.type === "tool-call") {
-              return (
+          {toolCallParts.map((part: any, idx: number) => {
+            return (
+              <div
+                key={`tool-call-${idx}`}
+                className="tool-call-indicator"
+                style={{
+                  marginTop: "8px",
+                  padding: "8px",
+                  background: "rgba(0,0,0,0.05)",
+                  borderRadius: "4px",
+                  fontSize: "0.9em",
+                }}
+              >
                 <div
-                  key={idx}
-                  className="tool-call-indicator"
                   style={{
-                    marginTop: "8px",
-                    padding: "8px",
-                    background: "rgba(0,0,0,0.05)",
-                    borderRadius: "4px",
-                    fontSize: "0.9em",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "6px",
+                    fontWeight: "bold",
                   }}
                 >
-                  <div
+                  Using tool: {part.toolName}
+                </div>
+                <details>
+                  <summary
                     style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "6px",
-                      fontWeight: "bold",
+                      cursor: "pointer",
+                      outline: "none",
+                      marginTop: "4px",
                     }}
                   >
-                    <Play size={14} />
-                    Using tool: {part.toolName}
-                  </div>
-                  <details>
-                    <summary
-                      style={{
-                        cursor: "pointer",
-                        outline: "none",
-                        marginTop: "4px",
-                      }}
-                    >
-                      View Details
-                    </summary>
-                    <pre
-                      style={{
-                        overflowX: "auto",
-                        fontSize: "0.85em",
-                        marginTop: "4px",
-                      }}
-                    >
-                      {JSON.stringify(part.args, null, 2)}
-                    </pre>
-                  </details>
-                </div>
-              );
-            }
+                    View Details
+                  </summary>
+                  <pre
+                    style={{
+                      overflowX: "auto",
+                      fontSize: "0.85em",
+                      marginTop: "4px",
+                    }}
+                  >
+                    {JSON.stringify(part.args ?? part.input, null, 2)}
+                  </pre>
+                </details>
+              </div>
+            );
+          })}
+          {otherParts.map((part: any, idx: number) => {
             if (part.type === "tool-result") {
               // Not standard CoreMessage content part type for 'assistant' but 'tool' role messages have content array of tool-result?
               // Actually 'assistant' message only has text and tool-call.
               // 'tool' message has tool-result.
               // We display tool results if they are in the message history as separate 'tool' role messages.
               return null;
+            }
+            if (part.type === "text") {
+              return <div key={`text-${idx}`}>{part.text}</div>;
             }
             return null;
           })}
