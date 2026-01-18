@@ -3,8 +3,8 @@ import {
   Send,
   Settings as SettingsIcon,
   Loader2,
-  Play,
   Paperclip,
+  Terminal,
   X,
   Image as ImageIcon,
 } from "lucide-react";
@@ -82,39 +82,49 @@ export const Chat: React.FC<ChatProps> = ({ onOpenSettings }) => {
                 key={`tool-call-${idx}`}
                 className="tool-call-indicator"
                 style={{
-                  marginTop: "8px",
-                  padding: "8px",
-                  background: "rgba(0,0,0,0.05)",
-                  borderRadius: "4px",
+                  marginTop: "12px",
+                  marginBottom: "12px",
+                  borderRadius: "8px",
                   fontSize: "0.9em",
+                  border: "1px solid var(--border-color)",
+                  overflow: "hidden",
+                  backgroundColor: "rgba(0, 0, 0, 0.2)",
                 }}
               >
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "6px",
-                    fontWeight: "bold",
-                  }}
-                >
-                  <Play size={14} />
-                  Using tool: {part.toolName}
-                </div>
                 <details>
                   <summary
                     style={{
                       cursor: "pointer",
                       outline: "none",
-                      marginTop: "4px",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "8px",
+                      fontWeight: "500",
+                      padding: "8px 12px",
+                      backgroundColor: "rgba(255, 255, 255, 0.03)",
+                      listStyle: "none",
                     }}
                   >
-                    View Details
+                    <Terminal size={14} style={{ opacity: 0.7 }} />
+                    <span
+                      style={{
+                        fontFamily: "monospace",
+                        opacity: 0.9,
+                        flex: 1,
+                      }}
+                    >
+                      {part.toolName}
+                    </span>
                   </summary>
                   <pre
                     style={{
                       overflowX: "auto",
                       fontSize: "0.85em",
-                      marginTop: "4px",
+                      padding: "12px",
+                      margin: 0,
+                      color: "rgba(255, 255, 255, 0.8)",
+                      borderTop: "1px solid rgba(255, 255, 255, 0.05)",
+                      fontFamily: "monospace",
                     }}
                   >
                     {JSON.stringify(part.args ?? part.input, null, 2)}
